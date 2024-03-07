@@ -1,26 +1,24 @@
 import { sql } from "drizzle-orm";
-import { integer, pgEnum, pgTable, serial, uniqueIndex, varchar } from "drizzle-orm/pg-core";
+import { integer, pgTable, serial, varchar, uuid } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
     id: serial('id').primaryKey(),// not sure if theres a predetermined user id. 
-    discordUserId: varchar("discord_user_id", { length: 18 }).unique(),
-    discordUsername: varchar("discord_username").unique(),
-    discordAvatar: varchar("discord_avatar"),
+    discordUserId: varchar("discord_user_id", { length: 18 }).unique().notNull(),
+    discordUsername: varchar("discord_username").unique().notNull(),
+    discordAvatar: varchar("discord_avatar").notNull(),
 });
 
 export const sessions= pgTable("sessions", {
     // might need to use foreign key userID instead of discord info? 
-    sessionID: varchar("session_id").primaryKey(), 
-    discordUserID: varchar("discord_user_id"),
-    discordUsername: varchar("discord_username"),
-    discordAvatar: varchar("discord_avatar"),
+    sessionID: uuid("session_id").primaryKey(), 
+    userID: integer("user_id").references(() => users.id).notNull(),
 });
 
 export const submissions = pgTable("submissions", {
     id: serial("id").primaryKey(),
-    formID: varchar("form_id"),
-    userID: integer("user_id").references(() => users.id),
-    data: varchar("data"),
+    formID: varchar("form_id").notNull(),
+    userID: integer("user_id").references(() => users.id).notNull(),
+    data: varchar("data").notNull(),
     submittedAt: integer("submitted_at").default(sql`null`), //unix timestamp in milliseconds. null if draft.
 });
 
