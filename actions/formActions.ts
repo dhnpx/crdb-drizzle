@@ -1,25 +1,31 @@
 import db from "../db/index";
-import { user, submission } from "../db/schema";
+import { users, submissions, InsertUser,SelectUser, InsertSubmission, SelectSubmission} from "../db/schema";
 import { eq } from "drizzle-orm";
 
-export const addUser = async (discord_user_id: string, discord_username: string, discord_avatar: string) => {
-    await db.insert(user).values({
-        discordUserId: discord_user_id,
-        discordUsername: discord_username,
-        discordAvatar: discord_avatar
-    });
+export const createUser = async (user: InsertUser) => {
+    await db.insert(users).values(user);
 };
 
-export const createSubmission = async (id: number, formID: string, userID: number, data: string, submittedAt: number) => {
-    await db.insert(submission).values({
-        id: id,
-        formID: formID,
-        userID: userID,
-        data: data,
-        submittedAt: submittedAt,
-    });
+export const getUserByDiscordUserID = async (discord_user_id: string) => {
+    const user =  await db.select().from(users).where(eq(users.discordUserId, discord_user_id));
+    return user;
 }
 
 export const deleteUser = async(discordUserId: string) => {
-    await db.delete(user).where(eq(user.discordUserId, discordUserId)).returning();
+    await db.delete(users).where(eq(users.discordUserId, discordUserId));
 }
+
+export const createSubmission = async (submission: InsertSubmission) => {
+    await db.insert(submissions).values(submission);
+}
+
+
+export const getSubmissionByID = async (form_id: SelectSubmission["formID"]) : Promise<SelectSubmission> => {
+    const submission = await db.select().from(submissions).where(eq(submissions.formID, form_id));
+    return submission;
+}
+export const deleteSumissionByID = async (formID: string) => {
+    await db.delete(submissions).where(eq(submissions.formID, formID));
+}
+
+

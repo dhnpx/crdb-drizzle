@@ -1,14 +1,14 @@
 import { sql } from "drizzle-orm";
 import { integer, pgEnum, pgTable, serial, uniqueIndex, varchar } from "drizzle-orm/pg-core";
 
-export const user = pgTable("user", {
+export const users = pgTable("users", {
     id: serial('id').primaryKey(),// not sure if theres a predetermined user id. 
     discordUserId: varchar("discord_user_id", { length: 18 }).unique(),
     discordUsername: varchar("discord_username").unique(),
     discordAvatar: varchar("discord_avatar"),
 });
 
-export const createSessionRequest = pgTable("create_session_request", {
+export const sessions= pgTable("sessions", {
     // might need to use foreign key userID instead of discord info? 
     sessionID: varchar("session_id").primaryKey(), 
     discordUserID: varchar("discord_user_id"),
@@ -16,18 +16,20 @@ export const createSessionRequest = pgTable("create_session_request", {
     discordAvatar: varchar("discord_avatar"),
 });
 
-export const submission = pgTable("submission", {
+export const submissions = pgTable("submissions", {
     id: serial("id").primaryKey(),
     formID: varchar("form_id"),
-    userID: integer("user_id").references(() => user.id),
+    userID: integer("user_id").references(() => users.id),
     data: varchar("data"),
     submittedAt: integer("submitted_at").default(sql`null`), //unix timestamp in milliseconds. null if draft.
-    
 });
 
-export const createUserRequest = pgTable("create_user_request", {
-    sessionID: varchar("session_id"),
-    discordUserID: varchar("discord_user_id"),
-    discordUsername: varchar("discord_username"),
-    discordAvatar: varchar("discord_avatar"),
-});
+export type InsertUser = typeof users.$inferInsert;
+export type SelectUser = typeof users.$inferSelect;
+
+export type InsertSubmission = typeof submissions.$inferInsert;
+export type SelectSubmission = typeof submissions.$inferSelect;
+
+export type InsertSession = typeof sessions.$inferInsert;
+export type SelectSession = typeof sessions.$inferSelect;
+
