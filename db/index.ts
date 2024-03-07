@@ -10,3 +10,5 @@ const db = drizzle(queryConnection);
 
 migrate(drizzle(migrationConnection), { migrationsFolder: "drizzle" });
 migrationConnection.end();
+
+export  default db;
