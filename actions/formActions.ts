@@ -18,15 +18,15 @@ export const getUserBySessionID = async (session_id: schema.SelectSession["sessi
         discordUsername: schema.SelectUser["discordUsername"],
         discordAvatar: schema.SelectUser["discordAvatar"]
     }>> => {
-        const user = await db.select({
-            sessionID: schema.sessions.sessionID,
-            discordUserId: schema.users.discordUserId,
-            discordUsername: schema.users.discordUsername,
-            discordAvatar: schema.users.discordAvatar
-        }).from(schema.users).innerJoin(schema.sessions, eq(schema.users.id, schema.sessions.userID)).where(eq(schema.sessions.sessionID, session_id));
+    const user = await db.select({
+        sessionID: schema.sessions.sessionID,
+        discordUserId: schema.users.discordUserId,
+        discordUsername: schema.users.discordUsername,
+        discordAvatar: schema.users.discordAvatar
+    }).from(schema.users).innerJoin(schema.sessions, eq(schema.users.id, schema.sessions.userID)).where(eq(schema.sessions.sessionID, session_id));
 
-        return user;
-    }
+    return user;
+}
 
 export const deleteUser = async (discordUserId: schema.SelectUser["discordUserId"]) => {
     await db.delete(schema.users).where(eq(schema.users.discordUserId, discordUserId));
@@ -51,5 +51,4 @@ export const createSession = async (session: schema.InsertSession) => {
 
 export const deleteSessionByID = async (session_id: schema.SelectSession["sessionID"]) => {
     await db.delete(schema.sessions).where(eq(schema.sessions.sessionID, session_id));
-};
-
+}
